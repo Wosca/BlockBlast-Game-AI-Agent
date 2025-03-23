@@ -4,7 +4,7 @@ This repository is my implementation of the Block Blast game as well as an AI ag
 ### Credits: The game's visual design & assets have been borrowed from https://github.com/Kefrov/Blast/. Everything else, including the game logic, AI agent, etc. have been implemented by me.
 
 Steps:
-- [x] Implement the game logic. Make BlockBlast playable by humans.
+- [ ] Implement the game logic. Make BlockBlast playable by humans.
 - [x] Create the game environment for the AI agent.
 - [ ] Implement an agent that plays the game randomly.
 - [ ] Implement an agent that plays the game using Reinforcement Learning techniques.

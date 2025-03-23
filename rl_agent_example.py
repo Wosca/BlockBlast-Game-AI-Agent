@@ -108,19 +108,20 @@ def visualize_agent(env, agent, episodes=5, delay=0.2):
 def train_with_stable_baselines():
     """
     Example of how to use Stable Baselines3 with our environment.
-    Uncomment and install stable-baselines3 to use this function.
     """
     # Uncomment these imports after installing stable-baselines3
     from stable_baselines3 import PPO
     from stable_baselines3.common.vec_env import DummyVecEnv
     from stable_baselines3.common.callbacks import CheckpointCallback
 
+    print("started training with stable baselines")
+
     # Create and wrap the environment
     env = BlockGameEnv()
     env = DummyVecEnv([lambda: env])
 
     # Create the model
-    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./logs/")
+    model = PPO("MultiInputPolicy", env, verbose=1, tensorboard_log="./logs/")
 
     # Create callback for saving model
     checkpoint_callback = CheckpointCallback(
@@ -150,11 +151,11 @@ if __name__ == "__main__":
 
     # Visualize the agent playing
     print("Random Agent Playing...")
-    visualize_agent(env, agent, episodes=3, delay=0.5)
+    # visualize_agent(env, agent, episodes=1, delay=0.2)
 
-    # Example of training a random agent (just for demonstration)
-    print("Training Random Agent (just for demonstration)...")
-    train_agent(env, agent, episodes=5, max_steps=100, delay=0.1)
+    # # Example of training a random agent (just for demonstration)
+    # print("Training Random Agent (just for demonstration)...")
+    # train_agent(env, agent, episodes=5, max_steps=100, delay=0.1)
 
-    # Example of how you would use Stable Baselines3 (commented out)
-    # train_with_stable_baselines()
+    # Example of how you would use Stable Baselines3
+    train_with_stable_baselines()
