@@ -5,26 +5,11 @@ You can use this as a template for integrating with libraries like Stable Baseli
 """
 
 import time
-import random
 from game_env import BlockGameEnv
+from random_agent import RandomAgent
 
 
-class RandomAgent:
-    """A simple random agent for demonstration purposes."""
-
-    def __init__(self, env):
-        self.env = env
-
-    def predict(self, observation):
-        """Choose a random valid action."""
-        valid_actions = self.env.get_valid_actions()
-        if not valid_actions:
-            # If no valid actions, choose any action (env will handle the invalid action)
-            return random.randint(0, 3 * 8 * 8 - 1), None
-        return random.choice(valid_actions), None
-
-
-def train_agent(env, agent, episodes=10, max_steps=1000, delay=0.1):
+def demo_train_agent(env, agent, episodes=10, max_steps=1000, delay=0.1):
     """Train an agent on the environment for a specified number of episodes."""
     total_rewards = []
 
@@ -125,19 +110,18 @@ def train_with_stable_baselines():
 
     # Create callback for saving model
     checkpoint_callback = CheckpointCallback(
-        save_freq=10000, save_path="./models/", name_prefix="block_game_model"
+        save_freq=10000, save_path="./models/", name_prefix="PPO_model"
     )
 
-    # Train the model
-    model.learn(total_timesteps=1000000, callback=checkpoint_callback)
+    print("Starting training")
 
-    # Save the final model
+    # Train the model
+    model.learn(total_timesteps=100000, callback=checkpoint_callback)
+
+    # Save the final model with the current date
     model.save("block_game_final_model")
 
-    # Load and visualize
-    model = PPO.load("block_game_final_model")
-    env = BlockGameEnv(render_mode="human")
-    visualize_agent(env, model, episodes=5)
+    print("Training finished")
 
     pass
 
@@ -150,12 +134,19 @@ if __name__ == "__main__":
     agent = RandomAgent(env)
 
     # Visualize the agent playing
-    print("Random Agent Playing...")
-    # visualize_agent(env, agent, episodes=1, delay=0.2)
+    print("Random Agent Playing for 5 games...")
+    visualize_agent(env, agent, episodes=3, delay=0.2)
 
-    # # Example of training a random agent (just for demonstration)
-    # print("Training Random Agent (just for demonstration)...")
-    # train_agent(env, agent, episodes=5, max_steps=100, delay=0.1)
+    # Example of training a random agent (just for demonstration)
+    print("Training Random Agent (just for demonstration)...")
+    demo_train_agent(env, agent, episodes=3, max_steps=100, delay=0.1)
 
+    print("Training a PPO agent with StableBaselines3")
     # Example of how you would use Stable Baselines3
     train_with_stable_baselines()
+
+    print("Looking at the PPO agent play")
+    from stable_baselines3 import PPO
+
+    model = PPO.load("block_game_final_model")
+    visualize_agent(env, model, episodes=3)
