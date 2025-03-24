@@ -83,7 +83,6 @@ class BlockGameEnv(gym.Env):
         shape_idx, row, col = self._decode_action(action)
 
         # Track state before action for reward calculation
-        old_score = self.game_state.score
         old_game_over = self.game_state.game_over
 
         # Apply the action
