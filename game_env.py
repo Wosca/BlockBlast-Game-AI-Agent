@@ -94,7 +94,7 @@ class BlockGameEnv(gym.Env):
             self.renderer.chosen_shape = -1
 
         # Calculate reward
-        reward = self._calculate_reward(new_shapes_generated, old_score, old_game_over)
+        reward = self._calculate_reward(new_shapes_generated, old_game_over)
 
         # Get the new observation
         observation = self._get_observation()
@@ -167,30 +167,30 @@ class BlockGameEnv(gym.Env):
             "combo": np.array([state["combo"]], dtype=np.int8),
         }
 
-    def _calculate_reward(self, valid_placement, old_score, old_game_over):
+    def _calculate_reward(self, valid_placement, old_game_over):
         """
         Calculate the reward for the current action.
 
         Reward structure:
-        - Invalid placement: -1
-        - Valid placement: +0.1
-        - Points gained: +0.01 * points
-        - Lines cleared: +1 per line
+        - Invalid placement: -2.5
+        - Valid placement: +0.2
+        - Points gained: +0.02 * points
+        - Lines cleared: +1.5 per line
         - All pieces used: +0.5
-        - Game over: -10
+        - Game over: -20
         """
         if not valid_placement:
-            return -1.0  # Penalty for invalid placement
+            return -2.5  # Penalty for invalid placement
 
-        reward = 0.1  # Base reward for valid placement
+        reward = 0.2  # Base reward for valid placement
 
         # Points gained
         points_gained = self.game_state.last_action_score
-        reward += 0.01 * points_gained
+        reward += 0.02 * points_gained
 
         # Lines cleared
         lines_cleared = self.game_state.last_lines_cleared
-        reward += 1.0 * lines_cleared
+        reward += 1.5 * lines_cleared
 
         # Bonus for using all pieces (encouraging planning)
         if all(shape == 0 for shape in self.game_state.current_shapes):
@@ -198,7 +198,7 @@ class BlockGameEnv(gym.Env):
 
         # Penalty for game over
         if not old_game_over and self.game_state.game_over:
-            reward -= 10.0
+            reward -= 20.0
 
         return reward
 
