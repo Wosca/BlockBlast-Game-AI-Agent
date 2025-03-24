@@ -10,7 +10,9 @@ Steps:
 - [x] Create the game environment for the AI agent.
 - [x] Implement an agent that plays the game randomly.
 - [x] Set up an environment for RL agents
-- [ ] Implement an agent that plays the game using Reinforcement Learning techniques.
+- [ ] Train an gent using PPO
+- [ ] Train an agent using DQN
+- [ ] Create infrastructure for comparing the effectiveness of different agents.
 
 ## How to Run
 
