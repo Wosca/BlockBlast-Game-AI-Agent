@@ -34,7 +34,7 @@ python human_play.py
 
 Commands:
 
-- E,R,T to select the piece.
+- *E,R,T* to select the piece.
 - Hover over the board with your mouse to decide where to place the block.
 - Left click or click SPACE to place the piece at the selected location.
 - If you want to restart the game, press ESC.
@@ -42,6 +42,11 @@ Commands:
 ### Run the small AI agent demo.
 
 ```bash
-
 python ai_play.py
 ```
+
+This will run a small demo that 
+1. Shows a random agent playing the game.
+2. Shows a small demo of training happening.
+3. Starts training an agent using PPO via Stable Baselines.
+4. Shows the trained agent playing the game (it will be quite bad)
