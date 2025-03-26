@@ -282,7 +282,7 @@ if __name__ == "__main__":
     num_envs = 6
     total_timesteps = 1000000
     train_ppo_without_masking = False
-    train_ppo_with_masking = False
+    train_ppo_with_masking = True
     visualize_ppo_without_masking = False
     visualize_ppo_with_masking = True
 
