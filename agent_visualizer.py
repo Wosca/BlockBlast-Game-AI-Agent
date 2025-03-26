@@ -7,7 +7,9 @@ import time
 import numpy as np
 
 
-def visualize_agent(env, agent, episodes=5, delay=0.2, use_masks=False):
+def visualize_agent(
+    env, agent, episodes=5, delay=0.2, use_masks=False, window_title=None
+):
     """
     Visualize an agent playing the block game.
 
@@ -17,7 +19,22 @@ def visualize_agent(env, agent, episodes=5, delay=0.2, use_masks=False):
         episodes (int): Number of episodes to run
         delay (float): Delay between frames for visualization
         use_masks (bool): Whether to use action masks with the agent
+        window_title (str): Optional title for the pygame window
     """
+    # Set the window title if provided
+    if window_title and hasattr(env, "set_window_title"):
+        env.set_window_title(window_title)
+    elif window_title and hasattr(env.unwrapped, "set_window_title"):
+        env.unwrapped.set_window_title(window_title)
+    elif (
+        window_title
+        and hasattr(env, "unwrapped")
+        and hasattr(env.unwrapped, "renderer")
+        and env.unwrapped.renderer
+    ):
+        if hasattr(env.unwrapped.renderer, "set_window_title"):
+            env.unwrapped.renderer.set_window_title(window_title)
+
     # Run episodes
     total_scores = []
     total_rewards = []

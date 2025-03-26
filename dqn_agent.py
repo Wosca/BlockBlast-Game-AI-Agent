@@ -288,10 +288,24 @@ if __name__ == "__main__":
         # Load and visualize the trained model
         print("Visualizing trained DQN agent")
         loaded_model = DQN.load("./models/final_dqn_model")
-        visualize_agent(env, loaded_model, episodes=10, delay=0.2, use_masks=False)
+        visualize_agent(
+            env,
+            loaded_model,
+            episodes=10,
+            delay=0.2,
+            use_masks=False,
+            window_title="Standard DQN Agent",
+        )
 
     if visualize_dqn_with_masking:
         # Load and visualize the trained model
         print("Visualizing trained DQN agent with action masking")
         loaded_model = CustomDQN.load("./models/final_masked_dqn_model")
-        visualize_agent(env, loaded_model, episodes=10, delay=0.2, use_masks=True)
+        visualize_agent(
+            env,
+            loaded_model,
+            episodes=10,
+            delay=0.2,
+            use_masks=True,
+            window_title="DQN Agent with Action Masking",
+        )

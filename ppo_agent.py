@@ -224,10 +224,24 @@ if __name__ == "__main__":
         # Load and visualize the trained model
         print("Visualizing trained PPO agent")
         loaded_model = PPO.load("./models/final_ppo_model")
-        visualize_agent(env, loaded_model, episodes=10, delay=0.2, use_masks=False)
+        visualize_agent(
+            env,
+            loaded_model,
+            episodes=10,
+            delay=0.2,
+            use_masks=False,
+            window_title="Standard PPO Agent",
+        )
 
     if visualize_ppo_with_masking and maskable_ppo_available:
         # Load and visualize the trained model
         print("Visualizing trained MaskablePPO agent")
         loaded_model = MaskablePPO.load("./models/final_masked_ppo_model")
-        visualize_agent(env, loaded_model, episodes=10, delay=0.2, use_masks=True)
+        visualize_agent(
+            env,
+            loaded_model,
+            episodes=10,
+            delay=0.2,
+            use_masks=True,
+            window_title="MaskablePPO Agent",
+        )
