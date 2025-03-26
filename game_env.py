@@ -171,7 +171,7 @@ class BlockGameEnv(gym.Env):
         Calculate the reward for the current action.
 
         Reward structure:
-        - Invalid placement: -2.5
+        - Invalid placement: -1
         - Valid placement: +0.2
         - Points gained: +0.02 * points
         - Lines cleared: +1.5 per line
@@ -192,7 +192,7 @@ class BlockGameEnv(gym.Env):
 
         # Penalty for game over
         if not old_game_over and self.game_state.game_over:
-            reward -= 10.0
+            return -10.0
 
         return reward
 
