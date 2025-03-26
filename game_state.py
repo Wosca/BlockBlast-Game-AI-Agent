@@ -60,11 +60,15 @@ class BlockGameState:
             shape_idx < 0
             or shape_idx >= len(self.current_shapes)
             or not self.current_shapes[shape_idx]
-            or not hasattr(self.current_shapes[shape_idx], "form")
         ):
             return False
 
+        # Now that we know self.current_shapes[shape_idx] is not 0 or None,
+        # we can safely check for the form attribute
         shape = self.current_shapes[shape_idx]
+        if not hasattr(shape, "form"):
+            return False
+
         size = [len(shape.form), len(shape.form[0])]
 
         # Check if the shape fits within bounds and doesn't overlap

@@ -5,6 +5,7 @@ Includes standard DQN with optional action masking capability.
 
 import time
 import os
+import numpy as np
 import torch as th
 from torch import nn
 from stable_baselines3 import DQN
@@ -77,18 +78,29 @@ class CustomDQN(DQN):
             # Get q_values from the model
             q_values = self.q_net(self.policy.obs_to_tensor(observation)[0])
 
-            # Apply action mask
+            # Apply action mask - ensure it's converted to a boolean tensor
+            action_masks_tensor = th.tensor(
+                action_masks, device=q_values.device, dtype=th.bool
+            )
+
             q_values = th.where(
-                th.tensor(action_masks, device=q_values.device, dtype=th.bool),
+                action_masks_tensor,
                 q_values,
                 th.tensor(-1e8, device=q_values.device, dtype=q_values.dtype),
             )
 
-            # Get actions
+            # Get actions - convert to Python int to ensure it's a scalar
             actions = q_values.argmax(dim=1).cpu().numpy()
+            # Return the item (scalar) if it's a single action
+            if len(actions) == 1:
+                return int(actions[0]), None
             return actions, None
         else:
-            return super().predict(observation, deterministic=deterministic)
+            actions, states = super().predict(observation, deterministic=deterministic)
+            # Convert to Python int if it's a single action
+            if isinstance(actions, np.ndarray) and actions.shape == (1,):
+                return int(actions[0]), states
+            return actions, states
 
 
 def train_dqn(num_envs=1, total_timesteps=100000, save_path="./models/"):
@@ -274,18 +286,29 @@ def visualize_agent(env, agent, episodes=5, delay=0.2, use_masks=False):
                     action_masks = env.action_masks()
                 else:
                     raise AttributeError("Environment doesn't support action masks")
+
+                # Get action with masks
                 action, _ = agent.predict(
                     obs, action_masks=action_masks, deterministic=True
                 )
             else:
                 action, _ = agent.predict(obs, deterministic=True)
 
+            # Ensure action is a Python int
+            if not isinstance(action, int):
+                if isinstance(action, np.ndarray):
+                    action = int(action.item())
+                else:
+                    action = int(action)
+
+            # Decode action for visualization
+            shape_idx = action // 64
+            position = action % 64
+            row = position // 8
+            col = position % 8
+
             # Highlight the chosen action for visualization
             if hasattr(env, "renderer") and env.renderer:
-                shape_idx = action // 64
-                position = action % 64
-                row = position // 8
-                col = position % 8
                 env.renderer.set_agent_action(shape_idx, row, col)
                 env.renderer.set_agent_thinking(True)
 
@@ -335,7 +358,7 @@ if __name__ == "__main__":
     # Set parameters directly in code
     total_timesteps = 500000  # Typically DQN needs more samples than PPO
     train_dqn_without_masking = False
-    train_dqn_with_masking = True
+    train_dqn_with_masking = False
     visualize_dqn_without_masking = False
     visualize_dqn_with_masking = True
 
