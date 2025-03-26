@@ -175,11 +175,10 @@ class BlockGameEnv(gym.Env):
         - Valid placement: +0.2
         - Points gained: +0.02 * points
         - Lines cleared: +1.5 per line
-        - All pieces used: +0.5
         - Game over: -20
         """
         if not valid_placement:
-            return -2.5  # Penalty for invalid placement
+            return -1  # Penalty for invalid placement
 
         reward = 0.2  # Base reward for valid placement
 
@@ -189,15 +188,11 @@ class BlockGameEnv(gym.Env):
 
         # Lines cleared
         lines_cleared = self.game_state.last_lines_cleared
-        reward += 1.5 * lines_cleared
-
-        # Bonus for using all pieces (encouraging planning)
-        if all(shape == 0 for shape in self.game_state.current_shapes):
-            reward += 0.5
+        reward += 1 * lines_cleared
 
         # Penalty for game over
         if not old_game_over and self.game_state.game_over:
-            reward -= 20.0
+            reward -= 10.0
 
         return reward
 
@@ -209,3 +204,21 @@ class BlockGameEnv(gym.Env):
             valid_actions.append(self._encode_action(shape_idx, row, col))
 
         return valid_actions
+
+    def action_masks(self):
+        """
+        Returns a boolean mask indicating which actions are valid.
+        Required by MaskablePPO and can be used for DQN with action masking.
+
+        Returns:
+            np.ndarray: Boolean array of shape (action_space.n,) where
+                       True indicates the action is valid.
+        """
+        valid_actions = self.get_valid_actions()
+        mask = np.zeros(self.action_space.n, dtype=bool)
+
+        # Set True for each valid action
+        for action_idx in valid_actions:
+            mask[action_idx] = True
+
+        return mask
