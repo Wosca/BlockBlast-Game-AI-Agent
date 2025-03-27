@@ -171,16 +171,19 @@ class BlockGameEnv(gym.Env):
         Calculate the reward for the current action.
 
         Reward structure:
-        - Invalid placement: -1
+        - Invalid placement: -1.5
         - Valid placement: +0.2
         - Points gained: +0.02 * points
-        - Lines cleared: +1.5 per line
-        - Game over: -20
+        - Lines cleared: +1.0 per line
+        - Combo bonus: +0.5 * combo_count
+        - Grid emptiness reward: +0.01 * empty_cells_count
+        - Game over: -10.0
         """
         if not valid_placement:
-            return -1  # Penalty for invalid placement
+            return -1.5  # Increased penalty for invalid placement
 
-        reward = 0.2  # Base reward for valid placement
+        # Base reward for valid placement
+        reward = 0.2
 
         # Points gained
         points_gained = self.game_state.last_action_score
@@ -188,7 +191,16 @@ class BlockGameEnv(gym.Env):
 
         # Lines cleared
         lines_cleared = self.game_state.last_lines_cleared
-        reward += 1 * lines_cleared
+        reward += 1.0 * lines_cleared
+
+        # Combo bonus - reward combo streaks
+        combo_count = self.game_state.combos[1]
+        if combo_count > 0:
+            reward += 0.5 * combo_count
+
+        # Grid emptiness reward - encourage keeping the grid clearer
+        empty_cells = sum(row.count(0) for row in self.game_state.grid)
+        reward += 0.01 * empty_cells
 
         # Penalty for game over
         if not old_game_over and self.game_state.game_over:

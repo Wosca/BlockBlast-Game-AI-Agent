@@ -144,7 +144,7 @@ def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
 
     # Create checkpoint callback
     checkpoint_callback = CheckpointCallback(
-        save_freq=10000,  # Save every 10k steps
+        save_freq=5000000,  # Save every save_freq steps
         save_path=save_path,
         name_prefix="masked_ppo_model",
         save_replay_buffer=False,
@@ -190,9 +190,9 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     num_envs = 8
-    total_timesteps = 500000
+    total_timesteps = 500000000
     train_ppo_without_masking = False
-    train_ppo_with_masking = False
+    train_ppo_with_masking = True
     visualize_ppo_without_masking = True
     visualize_ppo_with_masking = False
 
