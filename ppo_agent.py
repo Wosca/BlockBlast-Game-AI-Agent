@@ -131,7 +131,7 @@ def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
         env,
         verbose=1,
         tensorboard_log="./logs/",
-        learning_rate=3e-4,
+        learning_rate=1e-4,  # Lower from 3e-4
         n_steps=2048,
         batch_size=64,
         n_epochs=10,
@@ -139,12 +139,13 @@ def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
         gae_lambda=0.95,
         clip_range=0.2,
         normalize_advantage=True,
-        ent_coef=0.01,
+        ent_coef=0.05,
+        max_grad_norm=0.5,  # Add gradient clipping
     )
 
     # Create checkpoint callback
     checkpoint_callback = CheckpointCallback(
-        save_freq=5000000,  # Save every save_freq steps
+        save_freq=10000,  # Save every save_freq steps
         save_path=save_path,
         name_prefix="masked_ppo_model",
         save_replay_buffer=False,
@@ -160,7 +161,7 @@ def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
         eval_env,
         best_model_save_path=save_path,
         log_path=save_path,
-        eval_freq=50000,
+        eval_freq=10000,
         deterministic=True,
         render=False,
     )
@@ -190,11 +191,11 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     num_envs = 8
-    total_timesteps = 500000000
+    total_timesteps = 50000000
     train_ppo_without_masking = False
-    train_ppo_with_masking = True
-    visualize_ppo_without_masking = True
-    visualize_ppo_with_masking = False
+    train_ppo_with_masking = False
+    visualize_ppo_without_masking = False
+    visualize_ppo_with_masking = True
 
     # Don't create the environment with render_mode="human" during training
 

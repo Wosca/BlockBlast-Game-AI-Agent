@@ -85,15 +85,19 @@ class BlockGameEnv(gym.Env):
         # Track state before action for reward calculation
         old_game_over = self.game_state.game_over
 
-        # Apply the action
+        # Check if the placement is valid BEFORE applying the action
+        valid_placement = self.game_state.is_valid_placement(shape_idx, row, col)
+
+        # Always attempt to apply the action, even if it's invalid
+        # place_shape will internally check validity and only change state if valid
         new_shapes_generated = self.game_state.place_shape(shape_idx, row, col)
 
         # Reset chosen shape in renderer if new shapes were generated
         if new_shapes_generated and self.render_mode == "human" and self.renderer:
             self.renderer.chosen_shape = -1
 
-        # Calculate reward
-        reward = self._calculate_reward(new_shapes_generated, old_game_over)
+        # Calculate reward based on whether the placement was valid
+        reward = self._calculate_reward(valid_placement, old_game_over)
 
         # Get the new observation
         observation = self._get_observation()
@@ -108,7 +112,7 @@ class BlockGameEnv(gym.Env):
 
         # Additional info
         info = {
-            "valid_placement": new_shapes_generated,
+            "valid_placement": valid_placement,
             "score": self.game_state.score,
             "lines_cleared": self.game_state.last_lines_cleared,
         }
@@ -180,10 +184,10 @@ class BlockGameEnv(gym.Env):
         - Game over: -10.0
         """
         if not valid_placement:
-            return -1.5  # Increased penalty for invalid placement
+            return -2  # Increased penalty for invalid placement
 
-        # Base reward for valid placement
-        reward = 0.2
+        # Base reward for valid placement (this is also surviving)
+        reward = 1
 
         # Points gained
         points_gained = self.game_state.last_action_score
@@ -191,16 +195,12 @@ class BlockGameEnv(gym.Env):
 
         # Lines cleared
         lines_cleared = self.game_state.last_lines_cleared
-        reward += 1.0 * lines_cleared
+        reward += 0.5 * lines_cleared
 
         # Combo bonus - reward combo streaks
         combo_count = self.game_state.combos[1]
         if combo_count > 0:
             reward += 0.5 * combo_count
-
-        # Grid emptiness reward - encourage keeping the grid clearer
-        empty_cells = sum(row.count(0) for row in self.game_state.grid)
-        reward += 0.01 * empty_cells
 
         # Penalty for game over
         if not old_game_over and self.game_state.game_over:

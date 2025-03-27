@@ -99,6 +99,7 @@ def visualize_agent(
             # Check if action was valid and print result
             action_valid = info.get("action_valid", True)
             print(f"Action valid: {action_valid}, Reward: {reward:.2f}")
+            print(f"Total reward: {total_reward:.2f}")
 
             # Update episode score from info
             if "score" in info:
