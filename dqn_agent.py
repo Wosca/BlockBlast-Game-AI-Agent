@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     total_timesteps = 500000  # Typically DQN needs more samples than PPO
-    train_dqn_agent = True
+    train_dqn_agent = False
     visualize_dqn_agent = True
 
     # Don't create the environment with render_mode="human" during training
@@ -124,8 +124,8 @@ if __name__ == "__main__":
         visualize_agent(
             env,
             loaded_model,
-            episodes=10,
-            delay=0.2,
+            episodes=1,
+            delay=10,
             use_masks=False,
             window_title="DQN Agent",
         )

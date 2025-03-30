@@ -86,6 +86,7 @@ class BlockGameEnv(gym.Env):
         old_game_over = self.game_state.game_over
 
         # Check if the placement is valid BEFORE applying the action
+        print("TESTING IF IT IS VALID IN STEP WITH ACTION", action)
         valid_placement = self.game_state.is_valid_placement(shape_idx, row, col)
 
         # Always attempt to apply the action, even if it's invalid
@@ -184,23 +185,23 @@ class BlockGameEnv(gym.Env):
         - Game over: -10.0
         """
         if not valid_placement:
-            return -2  # Increased penalty for invalid placement
+            return -1.5  # Increased penalty for invalid placement
 
         # Base reward for valid placement (this is also surviving)
         reward = 1
 
         # Points gained
         points_gained = self.game_state.last_action_score
-        reward += 0.02 * points_gained
+        reward += 0.01 * points_gained
 
         # Lines cleared
         lines_cleared = self.game_state.last_lines_cleared
-        reward += 0.5 * lines_cleared
+        reward += 0.3 * lines_cleared
 
         # Combo bonus - reward combo streaks
         combo_count = self.game_state.combos[1]
         if combo_count > 0:
-            reward += 0.5 * combo_count
+            reward += 0.2 * combo_count
 
         # Penalty for game over
         if not old_game_over and self.game_state.game_over:
@@ -215,6 +216,7 @@ class BlockGameEnv(gym.Env):
         for shape_idx, row, col in self.game_state.get_valid_actions():
             valid_actions.append(self._encode_action(shape_idx, row, col))
 
+        PRINT(valid_actions)
         return valid_actions
 
     def action_masks(self):
