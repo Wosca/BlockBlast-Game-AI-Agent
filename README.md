@@ -10,8 +10,8 @@ Steps:
 - [x] Create the game environment for the AI agent.
 - [x] Implement an agent that plays the game randomly.
 - [x] Set up an environment for RL agents
-- [ ] Train an gent using PPO
-- [ ] Train an agent using DQN
+- [x] Train an gent using PPO
+- [x] Train an agent using DQN
 - [ ] Create infrastructure for comparing the effectiveness of different agents.
 
 ## How to Run
@@ -41,14 +41,39 @@ Commands:
 - Left click or click SPACE to place the piece at the selected location.
 - If you want to restart the game, press ESC.
 
-### Run the small AI agent demo.
+### Train or visualize PPO agent (with or without masking)
 
-```bash
-python ai_play.py
+in `ppo_agent.py` you can modify the following lines as well as any other hyperparameters or setting that you want
+```
+    train_ppo_without_masking = True
+    train_ppo_with_masking = False
+    visualize_ppo_without_masking = False
+    visualize_ppo_with_masking = False
+
 ```
 
-This will run a small demo that 
-1. Shows a random agent playing the game.
-2. Shows a small demo of training happening.
-3. Starts training an agent using PPO via Stable Baselines.
-4. Shows the trained agent playing the game (it will be quite bad)
+you can then run
+```bash
+python ppo_agent.py
+```
+and depending on your choice, the training for ppo_agent will start or will have the trained model from models runnning.
+
+
+
+### Train or visualize DQN agent
+
+in `dqn_agent.py` you can modify the following lines as well as any other hyperparameters or setting that you want
+```
+    train_dqn_agent = False
+    visualize_dqn_agent = True
+```
+
+you can then run
+```bash
+python dqn_agent.py
+```
+and depending on your choice, the training for dqn_agent will start or will have the trained model from models runnning.
+
+
+
+
