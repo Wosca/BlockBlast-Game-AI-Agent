@@ -173,14 +173,6 @@ class BlockGameEnv(gym.Env):
         """
         Calculate the reward for the current action.
 
-        Reward structure:
-        - Invalid placement: -1.5
-        - Valid placement: +0.2
-        - Points gained: +0.02 * points
-        - Lines cleared: +1.0 per line
-        - Combo bonus: +0.5 * combo_count
-        - Grid emptiness reward: +0.01 * empty_cells_count
-        - Game over: -10.0
         """
 
         if not valid_placement:
