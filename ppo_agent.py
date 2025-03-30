@@ -190,12 +190,12 @@ if __name__ == "__main__":
     os.makedirs("./logs/", exist_ok=True)
 
     # Set parameters directly in code
-    num_envs = 6
-    total_timesteps = 1000000
-    train_ppo_without_masking = False
-    train_ppo_with_masking = True
+    num_envs = 8
+    total_timesteps = 10000000
+    train_ppo_without_masking = True
+    train_ppo_with_masking = False
     visualize_ppo_without_masking = False
-    visualize_ppo_with_masking = True
+    visualize_ppo_with_masking = False
 
     # Don't create the environment with render_mode="human" during training
 
