@@ -78,7 +78,7 @@ def train_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
         gae_lambda=0.95,
         clip_range=0.2,
         normalize_advantage=True,
-        ent_coef=0.01,
+        ent_coef=0.05,
     )
 
     # Create checkpoint callback
@@ -191,11 +191,11 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     num_envs = 8
-    total_timesteps = 10000000
-    train_ppo_without_masking = True
-    train_ppo_with_masking = False
+    total_timesteps = 1000000
+    train_ppo_without_masking = False
+    train_ppo_with_masking = True
     visualize_ppo_without_masking = False
-    visualize_ppo_with_masking = False
+    visualize_ppo_with_masking = True
 
     # Don't create the environment with render_mode="human" during training
 

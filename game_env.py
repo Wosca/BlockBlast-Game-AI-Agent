@@ -182,28 +182,24 @@ class BlockGameEnv(gym.Env):
         - Grid emptiness reward: +0.01 * empty_cells_count
         - Game over: -10.0
         """
-        if not valid_placement:
-            return -1.5  # Increased penalty for invalid placement
 
-        # Base reward for valid placement (this is also surviving)
-        reward = 1
+        if not valid_placement:
+            return -0.5  # Reduced penalty
+
+        # Base reward for valid placement
+        reward = 0.5
 
         # Points gained
         points_gained = self.game_state.last_action_score
-        reward += 0.01 * points_gained
+        reward += 0.05 * points_gained  # Increased multiplier
 
-        # Lines cleared
+        # Lines cleared - boost this component
         lines_cleared = self.game_state.last_lines_cleared
-        reward += 0.3 * lines_cleared
+        reward += 1.0 * lines_cleared  # Increased multiplier
 
-        # Combo bonus - reward combo streaks
-        combo_count = self.game_state.combos[1]
-        if combo_count > 0:
-            reward += 0.2 * combo_count
-
-        # Penalty for game over
+        # Game over penalty - make less severe
         if not old_game_over and self.game_state.game_over:
-            return -10.0
+            return -3.0  # Less severe
 
         return reward
 
