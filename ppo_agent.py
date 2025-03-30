@@ -210,12 +210,12 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     num_envs = 8
-    total_timesteps = 10000000
-    train_ppo_without_masking = False
+    total_timesteps = 1000000
+    train_ppo_without_masking = True
     train_ppo_with_masking = True
-    visualize_ppo_without_masking = False
-    visualize_ppo_with_masking = False
-    continue_training = True 
+    visualize_ppo_without_masking = True
+    visualize_ppo_with_masking = True
+    continue_training = False 
 
     # Don't create the environment with render_mode="human" during training
 

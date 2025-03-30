@@ -54,7 +54,7 @@ def train_dqn(total_timesteps=100000, save_path="./models/", continue_training=F
     env = DummyVecEnv([make_env(0)])  # DQN typically uses a single environment
 
     # Check if a model already exists and if we want to continue training
-    model_path = os.path.join(save_path, "final_dqn_model")
+    model_path = os.path.join(save_path, "final_dqn_model.zip")
     if continue_training and os.path.exists(model_path):
         print("Loading existing model for continued training...")
         model = DQN.load(model_path, env=env)  # Load the existing model
@@ -111,9 +111,9 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     total_timesteps = 500000  # Typically DQN needs more samples than PPO
-    train_dqn_agent = False
-    visualize_dqn_agent = True
-    continue_training = True  # Default to False
+    train_dqn_agent = True
+    visualize_dqn_agent = Train
+    continue_training = False  # Default to False
 
     # Don't create the environment with render_mode="human" during training
     if train_dqn_agent:
