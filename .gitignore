@@ -1,8 +1,6 @@
 /__pycache__
 /blockblast
 /logs
-/models
 /best models
-*.zip
 high_score.txt
 .DS_Store
