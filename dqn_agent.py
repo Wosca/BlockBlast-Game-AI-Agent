@@ -38,13 +38,14 @@ def make_env(rank, seed=0):
     return _init
 
 
-def train_dqn(total_timesteps=100000, save_path="./models/"):
+def train_dqn(total_timesteps=100000, save_path="./models/", continue_training=False):
     """
     Train a DQN agent on the block game environment.
 
     Args:
         total_timesteps (int): Total timesteps for training
         save_path (str): Directory to save model checkpoints
+        continue_training (bool): Whether to continue training from a saved model
 
     Returns:
         The trained DQN model
@@ -52,25 +53,31 @@ def train_dqn(total_timesteps=100000, save_path="./models/"):
     # Create training environment
     env = DummyVecEnv([make_env(0)])  # DQN typically uses a single environment
 
-    # Create the DQN model
-    model = DQN(
-        "MultiInputPolicy",
-        env,
-        verbose=1,
-        tensorboard_log="./logs/",
-        learning_rate=1e-4,
-        buffer_size=100000,
-        learning_starts=1000,
-        batch_size=64,
-        gamma=0.99,
-        tau=0.005,  # Soft update coefficient
-        target_update_interval=500,
-        exploration_fraction=0.2,
-        exploration_initial_eps=1.0,
-        exploration_final_eps=0.05,
-        train_freq=(4, "step"),
-        gradient_steps=1,
-    )
+    # Check if a model already exists and if we want to continue training
+    model_path = os.path.join(save_path, "final_dqn_model")
+    if continue_training and os.path.exists(model_path):
+        print("Loading existing model for continued training...")
+        model = DQN.load(model_path, env=env)  # Load the existing model
+    else:
+        # Create the DQN model
+        model = DQN(
+            "MultiInputPolicy",
+            env,
+            verbose=1,
+            tensorboard_log="./logs/",
+            learning_rate=1e-4,
+            buffer_size=100000,
+            learning_starts=1000,
+            batch_size=64,
+            gamma=0.99,
+            tau=0.005,  # Soft update coefficient
+            target_update_interval=500,
+            exploration_fraction=0.2,
+            exploration_initial_eps=1.0,
+            exploration_final_eps=0.05,
+            train_freq=(4, "step"),
+            gradient_steps=1,
+        )
 
     # Create checkpoint callback
     checkpoint_callback = CheckpointCallback(
@@ -106,12 +113,17 @@ if __name__ == "__main__":
     total_timesteps = 500000  # Typically DQN needs more samples than PPO
     train_dqn_agent = False
     visualize_dqn_agent = True
+    continue_training = True  # Default to False
 
     # Don't create the environment with render_mode="human" during training
     if train_dqn_agent:
         # Train DQN
         print(f"Training DQN for {total_timesteps} timesteps")
-        model = train_dqn(total_timesteps=total_timesteps, save_path="./models/")
+        model = train_dqn(
+            total_timesteps=total_timesteps,
+            save_path="./models/",
+            continue_training=continue_training,
+        )
 
     # Now create environment with rendering ONLY for visualization
     if visualize_dqn_agent:
@@ -125,7 +137,7 @@ if __name__ == "__main__":
             env,
             loaded_model,
             episodes=1,
-            delay=10,
+            delay=1,
             use_masks=False,
             window_title="DQN Agent",
         )

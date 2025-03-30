@@ -49,7 +49,9 @@ def make_env(rank, seed=0):
     return _init
 
 
-def train_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
+def train_ppo(
+    num_envs=4, total_timesteps=100000, save_path="./models/", continue_training=False
+):
     """
     Train a standard PPO agent on the block game environment.
 
@@ -57,6 +59,7 @@ def train_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
         num_envs (int): Number of parallel environments to use
         total_timesteps (int): Total timesteps for training
         save_path (str): Directory to save model checkpoints
+        continue_training (bool): Whether to continue training from a saved model
 
     Returns:
         The trained PPO model
@@ -64,22 +67,28 @@ def train_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
     # Create training vectorized environments
     env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    # Create the PPO model
-    model = PPO(
-        "MultiInputPolicy",
-        env,
-        verbose=1,
-        tensorboard_log="./logs/",
-        learning_rate=3e-4,
-        n_steps=2048,
-        batch_size=64,
-        n_epochs=10,
-        gamma=0.99,
-        gae_lambda=0.95,
-        clip_range=0.2,
-        normalize_advantage=True,
-        ent_coef=0.05,
-    )
+    # Check if a model already exists and if we want to continue training
+    model_path = os.path.join(save_path, "final_ppo_model.zip")
+    if continue_training and os.path.exists(model_path):
+        print("Loading existing model for continued training...")
+        model = PPO.load(model_path, env=env)  # Load the existing model
+    else:
+        # Create the PPO model
+        model = PPO(
+            "MultiInputPolicy",
+            env,
+            verbose=1,
+            tensorboard_log="./logs/",
+            learning_rate=3e-4,
+            n_steps=2048,
+            batch_size=64,
+            n_epochs=10,
+            gamma=0.99,
+            gae_lambda=0.95,
+            clip_range=0.2,
+            normalize_advantage=True,
+            ent_coef=0.05,
+        )
 
     # Create checkpoint callback
     checkpoint_callback = CheckpointCallback(
@@ -106,7 +115,9 @@ def train_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
     return model
 
 
-def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
+def train_masked_ppo(
+    num_envs=4, total_timesteps=100000, save_path="./models/", continue_training=False
+):
     """
     Train a PPO agent with action masking on the block game environment.
 
@@ -114,6 +125,7 @@ def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
         num_envs (int): Number of parallel environments to use
         total_timesteps (int): Total timesteps for training
         save_path (str): Directory to save model checkpoints
+        continue_training (bool): Whether to continue training from a saved model
 
     Returns:
         The trained MaskablePPO model
@@ -125,23 +137,30 @@ def train_masked_ppo(num_envs=4, total_timesteps=100000, save_path="./models/"):
     # Create training vectorized environments - allows for parallelization
     env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    # Create the MaskablePPO model
-    model = MaskablePPO(
-        "MultiInputPolicy",
-        env,
-        verbose=1,
-        tensorboard_log="./logs/",
-        learning_rate=1e-4,  # Lower from 3e-4
-        n_steps=2048,
-        batch_size=64,
-        n_epochs=10,
-        gamma=0.99,
-        gae_lambda=0.95,
-        clip_range=0.2,
-        normalize_advantage=True,
-        ent_coef=0.05,
-        max_grad_norm=0.5,  # Add gradient clipping
-    )
+    # Check if a model already exists and if we want to continue training
+    model_path = os.path.join(save_path, "final_masked_ppo_model.zip")
+    print(model_path)
+    if continue_training and os.path.exists(model_path):
+        print("Loading existing MaskablePPO model for continued training...")
+        model = MaskablePPO.load(model_path, env=env)  # Load the existing model
+    else:
+        # Create the MaskablePPO model
+        model = MaskablePPO(
+            "MultiInputPolicy",
+            env,
+            verbose=1,
+            tensorboard_log="./logs/",
+            learning_rate=1e-4,  # Lower from 3e-4
+            n_steps=2048,
+            batch_size=64,
+            n_epochs=10,
+            gamma=0.99,
+            gae_lambda=0.95,
+            clip_range=0.2,
+            normalize_advantage=True,
+            ent_coef=0.05,
+            max_grad_norm=0.5,  # Add gradient clipping
+        )
 
     # Create checkpoint callback
     checkpoint_callback = CheckpointCallback(
@@ -191,11 +210,12 @@ if __name__ == "__main__":
 
     # Set parameters directly in code
     num_envs = 8
-    total_timesteps = 1000000
+    total_timesteps = 10000000
     train_ppo_without_masking = False
     train_ppo_with_masking = True
     visualize_ppo_without_masking = False
-    visualize_ppo_with_masking = True
+    visualize_ppo_with_masking = False
+    continue_training = True 
 
     # Don't create the environment with render_mode="human" during training
 
@@ -205,7 +225,10 @@ if __name__ == "__main__":
             f"Training standard PPO with {num_envs} environments for {total_timesteps} timesteps"
         )
         model = train_ppo(
-            num_envs=num_envs, total_timesteps=total_timesteps, save_path="./models/"
+            num_envs=num_envs,
+            total_timesteps=total_timesteps,
+            save_path="./models/",
+            continue_training=continue_training,
         )
 
     if train_ppo_with_masking and maskable_ppo_available:
@@ -214,7 +237,10 @@ if __name__ == "__main__":
             f"Training MaskablePPO with {num_envs} environments for {total_timesteps} timesteps"
         )
         model = train_masked_ppo(
-            num_envs=num_envs, total_timesteps=total_timesteps, save_path="./models/"
+            num_envs=num_envs,
+            total_timesteps=total_timesteps,
+            save_path="./models/",
+            continue_training=continue_training,
         )
 
     # Now create environment with rendering ONLY for visualization
