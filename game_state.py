@@ -310,7 +310,6 @@ class BlockGameState:
             or shape_idx >= len(self.current_shapes)
             or not self.current_shapes[shape_idx]
         ):
-            print("SELECTED USED SHAPE")
             return False
 
         # Get the shape
@@ -322,7 +321,6 @@ class BlockGameState:
 
         # Early boundary check (to avoid unnecessary iterations)
         if row < 0 or col < 0 or row + size[0] > 8 or col + size[1] > 8:
-            print("SHAPE DOES NOT FIT - BOUNDARY CHECK")
             return False
 
         # Check for overlaps
@@ -330,10 +328,8 @@ class BlockGameState:
             for j in range(size[1]):
                 if shape.form[i][j]:
                     if self.grid[row + i][col + j]:
-                        print("SHAPE DOES NOT FIT - OVERLAP")
                         return False
 
-        print("SHAPE IS OKAY")
         return True
 
     def get_valid_actions(self):
@@ -352,22 +348,18 @@ class BlockGameState:
 
             for row in range(8 - size[0] + 1):
                 for col in range(8 - size[1] + 1):
-                    print(
-                        "checking in get_valid action in game_state",
-                        shape_idx,
-                        row,
-                        col,
-                    )
                     if self.is_valid_placement(shape_idx, row, col):
                         valid_actions.append((shape_idx, row, col))
 
         return valid_actions
 
     def place_shape(self, shape_idx, row, col):
-        """Place a shape on the grid and update the game state."""
-        print("checking in place-shape in game state with", shape_idx, row, col)
+        """Attempt to place a shape on the grid and update the game state if it is successful.
+        Returns is_valid_placement, new shapes generated."""
         if not self.is_valid_placement(shape_idx, row, col):
-            return False
+            return False, False
+
+        is_valid_placement = True
 
         # Get the shape and its dimensions
         shape = self.current_shapes[shape_idx]
@@ -409,7 +401,7 @@ class BlockGameState:
         # Check if the game is over
         self.check_game_over()
 
-        return new_shapes_generated
+        return is_valid_placement, new_shapes_generated
 
     def update_grid(self):
         """Clear completed rows/columns and update score."""
@@ -496,8 +488,6 @@ class BlockGameState:
             # Only loop through valid starting positions based on shape size
             for row in range(8 - size[0] + 1):
                 for col in range(8 - size[1] + 1):
-                    print("checking if game is over", shape_idx, row, col)
-
                     # Quick check - if any position works, game isn't over
                     valid = True
                     for i in range(size[0]):

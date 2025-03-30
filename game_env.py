@@ -85,13 +85,11 @@ class BlockGameEnv(gym.Env):
         # Track state before action for reward calculation
         old_game_over = self.game_state.game_over
 
-        # Check if the placement is valid BEFORE applying the action
-        print("TESTING IF IT IS VALID IN STEP WITH ACTION", action)
-        valid_placement = self.game_state.is_valid_placement(shape_idx, row, col)
-
         # Always attempt to apply the action, even if it's invalid
         # place_shape will internally check validity and only change state if valid
-        new_shapes_generated = self.game_state.place_shape(shape_idx, row, col)
+        valid_placement, new_shapes_generated = self.game_state.place_shape(
+            shape_idx, row, col
+        )
 
         # Reset chosen shape in renderer if new shapes were generated
         if new_shapes_generated and self.render_mode == "human" and self.renderer:
@@ -216,7 +214,6 @@ class BlockGameEnv(gym.Env):
         for shape_idx, row, col in self.game_state.get_valid_actions():
             valid_actions.append(self._encode_action(shape_idx, row, col))
 
-        PRINT(valid_actions)
         return valid_actions
 
     def action_masks(self):
