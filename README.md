@@ -20,7 +20,9 @@ Steps:
 2. Create a virtual environment and install the dependencies
 ```bash 
 python -m venv blockblast
-source blockblast/bin/activate #if on mac
+source blockblast/bin/activate # if on mac
+blockblast\Scripts\activate # if on windows
+```
 pip install -r requirements.txt
 ```
 
