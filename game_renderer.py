@@ -645,8 +645,7 @@ class BlockGameRenderer:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                return "QUIT"  # tell the caller we want to quit
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
