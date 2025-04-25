@@ -1,11 +1,10 @@
 # Block Blast Game + Reinforcement Learning AI Agent
 
-A Tetris-inspired puzzle game (8×8 grid) with a combo system, and several Reinforcement Learning (RL) agents trained to play it. This repo includes:
+Block Blast is a Tetris-inspired puzzle game played on an 8×8 grid. At each turn, the player (or agent) is presented with three randomly generated block shapes and must choose one to place anywhere on the board. Whenever an entire row or column is filled, it clears and awards points; clearing multiple lines in succession activates a combo multiplier for even higher scores.
 
-- A Pygame reimplementation of Block Blast, playable by humans.
-- A custom OpenAI Gym environment.
-- Baseline and advanced RL agents (Random, PPO, DQN, Masked PPO).
-- Scripts to train, evaluate, and compare agents.
+Under the hood, the game engine guarantees that at least one of the three available shapes can always be placed, ensuring no unwinnable states arise prematurely. A Pygame-based interface lets humans play and test strategies interactively, while a custom OpenAI Gym environment exposes the game’s state, action space, and reward function for Reinforcement Learning.
+
+This repository implements several RL agents—including a random baseline, Deep Q-Network (DQN), Proximal Policy Optimization (PPO), and a masked-action PPO variant—to train and evaluate performance. Comprehensive scripts are provided to train agents, log metrics, visualize results, and compare different approaches under consistent conditions.
 
 <p align="center">
   <img src="blockblast_game/Assets/demo.png" alt="BlockBlast Gameplay" width="600"/>
