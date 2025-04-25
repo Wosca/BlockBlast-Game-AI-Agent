@@ -89,7 +89,7 @@ def train_masked_dqn(total_timesteps: int = 500_000, continue_training: bool = F
 
     # 3) Checkpoint callback
     checkpoint_cb = CheckpointCallback(
-        save_freq=100_000,
+        save_freq=1_000_000,
         save_path=MODELS_DIR,
         name_prefix="masked_dqn_model",
         save_replay_buffer=False,  # turning this on crashes the program as its not picklable as of now
@@ -108,17 +108,17 @@ def train_masked_dqn(total_timesteps: int = 500_000, continue_training: bool = F
             verbose=1,
             tensorboard_log=LOGS_DIR,
             learning_rate=1e-4,
-            buffer_size=100_000,
-            learning_starts=1_000,
-            batch_size=64,
+            buffer_size=1_000_000,
+            learning_starts=20_000,
+            batch_size=128,
             gamma=0.99,
             tau=0.005,
             target_update_interval=500,
-            exploration_fraction=0.2,
-            exploration_initial_eps=1.0,
-            exploration_final_eps=0.05,
+            exploration_fraction=0.05,
+            exploration_initial_eps=0.5,
+            exploration_final_eps=0.03,
             train_freq=(4, "step"),
-            gradient_steps=1,
+            gradient_steps=2,
         )
 
     # 5) Train
@@ -133,8 +133,8 @@ def train_masked_dqn(total_timesteps: int = 500_000, continue_training: bool = F
 
 
 if __name__ == "__main__":
-    total_timesteps = 500_000_000
-    continue_training = True
+    total_timesteps = 20_000_000
+    continue_training = False
     do_train = True
     do_visualize = True
 
