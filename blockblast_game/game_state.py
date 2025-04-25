@@ -537,12 +537,12 @@ class BlockGameState:
 
     def get_high_score(self):
         """Get the high score from file."""
-        if not os.path.exists("high_score.txt"):
+        if not os.path.exists("blockblast_game/high_score.txt"):
             self.save_score(0)
             return 0
 
         try:
-            with open("high_score.txt", "r") as f:
+            with open("blockblast_game/high_score.txt", "r") as f:
                 score = f.read().strip()
                 return int(score) if score.isdigit() else 0
         except (FileNotFoundError, ValueError):
@@ -551,7 +551,7 @@ class BlockGameState:
 
     def save_score(self, score):
         """Save a score to the high score file."""
-        with open("high_score.txt", "w") as file:
+        with open("blockblast_game/high_score.txt", "w") as file:
             file.write(str(score))
 
     def reset(self):

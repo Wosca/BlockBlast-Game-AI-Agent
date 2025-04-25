@@ -1,26 +1,5 @@
-"""
-Block Game – training utilities
-
-Features
---------
-* Continuing on‑policy RL with PPO or (optionally) MaskablePPO
-* Robust checkpointing & TensorBoard logging
-
-Usage (from shell)
-------------------
-$ python ppo_agent.py         # full pipeline
-
-You can toggle the booleans in the __main__ section to control which
-stages run (pre‑train, PPO, MaskablePPO, visualisation).
-
-The script looks for/creates these folders:
-    ./models/  – weights & checkpoints
-    ./logs/    – TensorBoard summaries
-"""
-
-from __future__ import annotations
-
 import os
+import sys
 from typing import Callable, Optional
 
 from stable_baselines3 import PPO
@@ -37,9 +16,19 @@ try:
 except ImportError:
     maskable_ppo_available = False
 
-from game_env import BlockGameEnv
-from agent_visualizer import visualize_agent  # pragma: no cover
+from blockblast_game.game_env import BlockGameEnv
+from agents.agent_visualizer import visualize_agent  # pragma: no cover
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+# Directories for models and logs next to this script
+MODELS_DIR = os.path.join(SCRIPT_DIR, "models")
+LOGS_DIR = os.path.join(SCRIPT_DIR, "logs")
+os.makedirs(MODELS_DIR, exist_ok=True)
+os.makedirs(LOGS_DIR, exist_ok=True)
 
 # ---------------------------------------------------------------------------
 # util: make_env – worker fn for SubprocVecEnv
@@ -47,14 +36,14 @@ from agent_visualizer import visualize_agent  # pragma: no cover
 
 
 def make_env(rank: int, seed: int = 0) -> Callable[[], BlockGameEnv]:
-    """Factory used by the vectorised environment."""
+    """Factory used by the vectorized environment."""
 
     def _init():
         env = BlockGameEnv()
         env = Monitor(env)
         try:
-            env.reset(seed=seed + rank)  # Gymnasium API
-        except TypeError:  # Older gym
+            env.reset(seed=seed + rank)
+        except TypeError:
             env.seed(seed + rank)
         return env
 
@@ -71,7 +60,7 @@ def _standard_ppo(env, **kwargs) -> PPO:
         "MultiInputPolicy",
         env,
         verbose=1,
-        tensorboard_log="./logs/",
+        tensorboard_log=LOGS_DIR,
         learning_rate=3e-4,
         n_steps=2048,
         batch_size=64,
@@ -88,24 +77,27 @@ def train_ppo(
     *,
     num_envs: int = 4,
     total_timesteps: int = 1_000_000,
-    save_path: str = "./models/",
+    save_path: Optional[str] = None,
     continue_training: bool = False,
     pretrained_path: Optional[str] = None,
 ):
+    """Train or continue training a PPO agent."""
+    save_dir = save_path or MODELS_DIR
     env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    # pick starting weights
-    if continue_training and pretrained_path and os.path.exists(pretrained_path):
-        print(f"[ppo] continuing from → {pretrained_path}")
+    # determine pretrained file
+    if continue_training and pretrained_path and os.path.isfile(pretrained_path):
+        print(f"[ppo] Continuing training from {pretrained_path}")
         model = PPO.load(pretrained_path, env=env)
+        model.tensorboard_log = LOGS_DIR
         reset_flag = False
     else:
         model = _standard_ppo(env)
         reset_flag = True
 
-    checkpoint_callback = CheckpointCallback(
+    checkpoint_cb = CheckpointCallback(
         save_freq=10_000,
-        save_path=save_path,
+        save_path=save_dir,
         name_prefix="ppo_model",
         save_replay_buffer=False,
         save_vecnormalize=True,
@@ -113,13 +105,13 @@ def train_ppo(
 
     model.learn(
         total_timesteps=total_timesteps,
-        callback=checkpoint_callback,
+        callback=checkpoint_cb,
         reset_num_timesteps=reset_flag,
     )
 
-    final_path = os.path.join(save_path, "final_ppo_model")
+    final_path = os.path.join(save_dir, "final_ppo_model")
     model.save(final_path)
-    print(f"[ppo] training done → {final_path}.zip")
+    print(f"[ppo] Training done: {final_path}.zip")
     return model
 
 
@@ -133,7 +125,7 @@ def _standard_masked(env, **kwargs):
         "MultiInputPolicy",
         env,
         verbose=1,
-        tensorboard_log="./logs/",
+        tensorboard_log=LOGS_DIR,
         learning_rate=5e-5,
         n_steps=4096,
         batch_size=128,
@@ -151,36 +143,38 @@ def train_masked_ppo(
     *,
     num_envs: int = 4,
     total_timesteps: int = 1_000_000,
-    save_path: str = "./models/",
+    save_path: Optional[str] = None,
     continue_training: bool = False,
     pretrained_path: Optional[str] = None,
 ):
     if not maskable_ppo_available:
-        raise RuntimeError("sb3_contrib not installed – MaskablePPO unavailable")
+        raise RuntimeError("MaskablePPO unavailable: sb3_contrib not installed")
 
+    save_dir = save_path or MODELS_DIR
     env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
 
-    if continue_training and pretrained_path and os.path.exists(pretrained_path):
-        print(f"[masked] continuing from → {pretrained_path}")
+    if continue_training and pretrained_path and os.path.isfile(pretrained_path):
+        print(f"[masked ppo] Continuing training from {pretrained_path}")
         model = MaskablePPO.load(pretrained_path, env=env)
+        model.tensorboard_log = LOGS_DIR
         reset_flag = False
     else:
         model = _standard_masked(env)
         reset_flag = True
 
-    checkpoint_callback = CheckpointCallback(
+    checkpoint_cb = CheckpointCallback(
         save_freq=100_000,
-        save_path=save_path,
+        save_path=save_dir,
         name_prefix="masked_ppo_model",
         save_replay_buffer=False,
         save_vecnormalize=True,
     )
 
     eval_env = SubprocVecEnv([make_env(0, seed=42)])
-    eval_callback = MaskableEvalCallback(
+    eval_cb = MaskableEvalCallback(
         eval_env,
-        best_model_save_path=save_path,
-        log_path=save_path,
+        best_model_save_path=save_dir,
+        log_path=save_dir,
         eval_freq=100_000,
         deterministic=True,
         render=False,
@@ -188,59 +182,63 @@ def train_masked_ppo(
 
     model.learn(
         total_timesteps=total_timesteps,
-        callback=[checkpoint_callback, eval_callback],
+        callback=[checkpoint_cb, eval_cb],
         reset_num_timesteps=reset_flag,
     )
 
-    final_path = os.path.join(save_path, "final_masked_ppo_model")
+    final_path = os.path.join(save_dir, "final_masked_ppo_model")
     model.save(final_path)
-    print(f"[masked] training done → {final_path}.zip")
+    print(f"[masked] Training done: {final_path}.zip")
     return model
 
 
 # ---------------------------------------------------------------------------
-# script entry‑point
+# script entry-point
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    os.makedirs("./models/", exist_ok=True)
-    os.makedirs("./logs/", exist_ok=True)
-
-    # ---- parameters – tweak here or use argparse ----
+    # Parameters
     num_envs = 8
     total_timesteps = 100_000_000
     continue_training = True
 
-    train_ppo_without_masking = True
-    train_ppo_with_masking = False
+    train_ppo_without_masking = False
+    train_ppo_with_masking = True
     visualize_ppo_without_masking = False
     visualize_ppo_with_masking = False
 
-    # ---- RL fine‑tune ----
+    # PPO
     if train_ppo_without_masking:
+        pretrained = os.path.join(MODELS_DIR, "final_ppo_model.zip")
         train_ppo(
             num_envs=num_envs,
             total_timesteps=total_timesteps,
             continue_training=continue_training,
-            pretrained_path="./models/final_ppo_model.zip",
+            pretrained_path=pretrained,
         )
 
+    # Maskable PPO
     if train_ppo_with_masking and maskable_ppo_available:
+        pretrained = os.path.join(MODELS_DIR, "final_masked_ppo_model.zip")
         train_masked_ppo(
             num_envs=num_envs,
             total_timesteps=total_timesteps,
             continue_training=continue_training,
-            pretrained_path="./models/final_masked_ppo_model.zip",
+            pretrained_path=pretrained,
         )
 
-    # ---- visualise (optional) ----
+    # Visualization environment
     render_env = BlockGameEnv(render_mode="human")
     render_env = Monitor(render_env)
 
     if visualize_ppo_without_masking:
-        agent = PPO.load("./models/final_ppo_model")
+        model_file = os.path.join(MODELS_DIR, "final_ppo_model.zip")
+        print(f"Loading PPO model from {model_file}")
+        agent = PPO.load(model_file)
         visualize_agent(render_env, agent, episodes=10, delay=0.2, use_masks=False)
 
     if visualize_ppo_with_masking and maskable_ppo_available:
-        agent = MaskablePPO.load("./models/final_masked_ppo_model")
+        model_file = os.path.join(MODELS_DIR, "final_masked_ppo_model.zip")
+        print(f"Loading MaskablePPO model from {model_file}")
+        agent = MaskablePPO.load(model_file)
         visualize_agent(render_env, agent, episodes=10, delay=0.2, use_masks=True)

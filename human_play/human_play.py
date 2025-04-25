@@ -3,9 +3,9 @@ from typing import List, Any
 
 import pygame
 import numpy as np
-from game_env import BlockGameEnv
+from blockblast_game.game_env import BlockGameEnv
 
-LOG_FILE = "human_play_log.json"
+LOG_FILE = "human_play/human_play_log.json"
 FPS = 30
 
 

@@ -5,14 +5,6 @@ This repository is my implementation of the Block Blast game as well as an AI ag
 
 ### Credits: The game's visual design & assets have been borrowed from https://github.com/Kefrov/Blast/. Everything else, including the game logic, AI agent, etc. have been implemented by me.
 
-Steps:
-- [x] Implement the game logic. Make BlockBlast playable by humans.
-- [x] Create the game environment for the AI agent.
-- [x] Implement an agent that plays the game randomly.
-- [x] Set up an environment for RL agents
-- [x] Train an gent using PPO
-- [x] Train an agent using DQN
-- [ ] Create infrastructure for comparing the effectiveness of different agents.
 
 ## How to Run
 
@@ -27,13 +19,15 @@ pip install -r requirements.txt
 ```
 
 
+Ensure you always run from the root of the repository to avoid sibling-folder import issues.
+
 ### Run the human playable version of the game
 
 Running the game in human mode allows you to play it using your keyboard and mouse controls.
 
 To run it, execute the following command:
 ```bash
-python human_play.py
+python -m human_play.human_play
 ```
 
 Commands:
@@ -56,7 +50,7 @@ in `ppo_agent.py` you can modify the following lines as well as any other hyperp
 
 you can then run
 ```bash
-python ppo_agent.py
+python -m agents.ppo_agent
 ```
 and depending on your choice, the training for ppo_agent will start or will have the trained model from models runnning.
 
@@ -72,7 +66,7 @@ in `dqn_agent.py` you can modify the following lines as well as any other hyperp
 
 you can then run
 ```bash
-python dqn_agent.py
+python -m agents.dqn_agent
 ```
 and depending on your choice, the training for dqn_agent will start or will have the trained model from models runnning.
 
