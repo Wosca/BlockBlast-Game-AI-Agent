@@ -4,7 +4,7 @@ from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
-from agents.agent_visualizer import visualize_agent  # Unified visualizer
+from agents.agent_do_visualizer import do_visualize_agent  # Unified do_visualizer
 from blockblast_game.game_env import BlockGameEnv
 
 # Determine paths relative to this script
@@ -110,23 +110,23 @@ if __name__ == "__main__":
     # Hyperparameters
     total_timesteps = 500_000
     continue_training = True
-    train_agent = True
-    visualize = True
+    do_train = True
+    do_visualize = True
 
-    if train_agent:
+    if do_train:
         trained = train_dqn(
             total_timesteps=total_timesteps,
             save_path=MODELS_DIR,
             continue_training=continue_training,
         )
 
-    if visualize:
+    if do_visualize:
         # Create a fresh environment for rendering
         env = BlockGameEnv(render_mode="human")
         env = Monitor(env)
         model_file = os.path.join(MODELS_DIR, "final_dqn_model.zip")
         print(f"Loading model from {model_file}")
         loaded = DQN.load(model_file)
-        visualize_agent(
+        do_visualize_agent(
             env, loaded, episodes=1, delay=1, use_masks=False, window_title="DQN Agent"
         )

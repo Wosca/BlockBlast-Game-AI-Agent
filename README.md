@@ -124,39 +124,32 @@ python -m human_play.human_play
 
 ### Training Agents
 
-#### PPO Agent
+Make sure you’re in the project root (so `blockblast_game/` and `agents/` are on your `PYTHONPATH`) and your virtualenv is activated.
 
-Edit `agents/ppo_agent.py` flags:
+## DQN
 
-```python
-train_ppo_without_masking = False
-train_ppo_with_masking    = False
-visualize_ppo_without_masking = False
-visualize_ppo_with_masking    = False
-continue_training= False
-```
+- **Standard DQN**  
+  ```bash
+  python -m agents.dqn_agent
+  ```
+- **Masked DQN**  
+  ```bash
+  python -m agents.dqn_masked_agent
+  ```
 
-Run:
+## PPO
 
-```bash
-python -m agents.ppo_agent
-```
+- **Standard PPO**  
+  ```bash
+  python -m agents.ppo_agent
+  ```
+- **Masked PPO**  
+  ```bash
+  python -m agents.ppo_masked_agent
+  ```
 
-#### DQN Agent
+Each script supports flags at the top of the file (e.g. `do_train`, `do_visualize`, `total_timesteps`, `continue_training`)—just edit those or wire in an `argparse` wrapper if you’d like CLI control.
 
-Edit `agents/dqn_agent.py` flags:
-
-```python
-train_dqn_agent    = False
-visualize_dqn_agent = False
-continue_training   = False 
-```
-
-Run:
-
-```bash
-python -m agents.dqn_agent
-```
 
 ---
 
