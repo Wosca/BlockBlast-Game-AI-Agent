@@ -254,7 +254,7 @@ We appreciate every contribution—big or small. Thank you for helping make Bloc
 
 - Action‐masking for DQN
 - Hyperparameter sweeps & longer training
-- Deploy a public “BlockBlast Solver” website with a MLOps pipeline
+- Deploy a [public “BlockBlast Solver”](https://github.com/RisticDjordje/BlockBlast-Solver-Website) website with a MLOps pipeline
 
 ---
 
