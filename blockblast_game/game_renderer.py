@@ -451,6 +451,14 @@ class BlockGameRenderer:
             surf.blit(font.render(act, True, (0, 0, 0)), (20, 60))
         self.main_screen.blit(surf, (0, 0))
 
+    def set_agent_action(self, shape_idx, row, col):
+        """Set the position for highlighting the agent's planned move."""
+        self.highlight_position = (shape_idx, row, col)
+
+    def set_agent_thinking(self, is_thinking):
+        """Toggle the agent thinking visualization."""
+        self.agent_thinking = is_thinking
+
     def process_human_events(self):
         """Process human input events and return actions if taken.
 
