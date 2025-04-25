@@ -149,7 +149,7 @@ Edit `agents/dqn_agent.py` flags:
 ```python
 train_dqn_agent    = False
 visualize_dqn_agent = False
-continue_training   = False  # or True to resume
+continue_training   = False 
 ```
 
 Run:
