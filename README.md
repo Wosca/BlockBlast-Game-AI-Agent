@@ -56,8 +56,11 @@ BlockBlast-Game-AI-Agent/
 │   └── results/           # CSVs & plots
 ├── agents/                # RL agents & models
 │   ├── models/            # Saved checkpoints
+│   ├── dqn_agent.py
+│   ├── dqn_masked_agent.py
 │   ├── ppo_agent.py
-│   └── dqn_agent.py
+│   ├── ppo_masked_agent.py
+│   └── random_agent.py
 ├── blockblast_game/       # Game environment & assets
 │   ├── game_env.py
 │   ├── game_renderer.py
@@ -128,28 +131,27 @@ Make sure you’re in the project root (so `blockblast_game/` and `agents/` are 
 
 ## DQN
 
-- **Standard DQN**  
+- **Standard DQN**
   ```bash
   python -m agents.dqn_agent
   ```
-- **Masked DQN**  
+- **Masked DQN**
   ```bash
   python -m agents.dqn_masked_agent
   ```
 
 ## PPO
 
-- **Standard PPO**  
+- **Standard PPO**
   ```bash
   python -m agents.ppo_agent
   ```
-- **Masked PPO**  
+- **Masked PPO**
   ```bash
   python -m agents.ppo_masked_agent
   ```
 
 Each script supports flags at the top of the file (e.g. `do_train`, `do_visualize`, `total_timesteps`, `continue_training`)—just edit those or wire in an `argparse` wrapper if you’d like CLI control.
-
 
 ---
 
@@ -215,14 +217,17 @@ Contributions are what make the open source community such an amazing place to l
    ```
 4. **Make your changes** in your branch.
 5. **Commit with clear, descriptive messages**:
+
    - Use imperative mood (e.g., “Add”, “Fix”, “Update”).
-   
+
    **Commit message style examples:**
+
    ```bash
    feat(game): add action masking for PPO agent
    fix(renderer): correct sprite alignment in preview mode
    docs(readme): update contributing section with commit guidelines
    ```
+
 6. **Push your branch** to GitHub:
    ```bash
    git push origin feature/YourFeatureName
@@ -230,7 +235,7 @@ Contributions are what make the open source community such an amazing place to l
 7. **Open a Pull Request** against the `main` branch of this repository. In your PR description, include:
    - A summary of your changes.
    - Any related issue numbers.
-   - Screenshots or GIFs when relevant (before-and-after visuals help reviewers). 
+   - Screenshots or GIFs when relevant (before-and-after visuals help reviewers).
 
 We appreciate every contribution—big or small. Thank you for helping make Block Blast even better!
 
