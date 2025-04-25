@@ -26,6 +26,7 @@ This repository implements several RL agents—including a random baseline, Deep
 
 - [Reinforcement Learning Environment](#-reinforcement-learning-environment)
 - [Algorithms](#-algorithms)
+- [Contributing](#-contributing)
 - [Results & Analysis](#-results--analysis)
 - [Future Work](#-future-work)
 - [Credits](#-credits)
@@ -203,6 +204,45 @@ See inline docstrings for hyperparameters and architecture details.
 
 ---
 
+## 🤝 Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. I welcome improvements, bug fixes, new features, and documentation enhancements! Feel free to start a discussion by opening an issue if you have questions or want to propose larger changes.
+
+### How to Contribute
+
+1. **Fork the repository** to your own GitHub account.
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/YourUserName/BlockBlast-Game-AI-Agent.git
+   cd BlockBlast-Game-AI-Agent
+   ```
+3. **Create a new branch** for your work with a descriptive name (feature, bugfix, etc.):
+   ```bash
+   git checkout -b feature/YourFeatureName
+   ```
+4. **Make your changes** in your branch.
+5. **Commit with clear, descriptive messages**:
+   - Use imperative mood (e.g., “Add”, “Fix”, “Update”).
+   
+   **Commit message style examples:**
+   ```bash
+   feat(game): add action masking for PPO agent
+   fix(renderer): correct sprite alignment in preview mode
+   docs(readme): update contributing section with commit guidelines
+   ```
+6. **Push your branch** to GitHub:
+   ```bash
+   git push origin feature/YourFeatureName
+   ```
+7. **Open a Pull Request** against the `main` branch of this repository. In your PR description, include:
+   - A summary of your changes.
+   - Any related issue numbers.
+   - Screenshots or GIFs when relevant (before-and-after visuals help reviewers). 
+
+We appreciate every contribution—big or small. Thank you for helping make Block Blast even better!
+
+---
+
 ## 📊 Results & Analysis
 
 - **DQN and PPO**: both struggle with the large action space of the game and I have not been able to get the agents to learn not to place pieces in invalid positions.
@@ -214,8 +254,7 @@ See inline docstrings for hyperparameters and architecture details.
 
 - Action‐masking for DQN
 - Hyperparameter sweeps & longer training
-- MLOps pipeline: Web UI for drawing board state & serving model (e.g., Flask + React)
-- Deploy a public “BlockBlast Solver” website
+- Deploy a public “BlockBlast Solver” website with a MLOps pipeline
 
 ---
 
