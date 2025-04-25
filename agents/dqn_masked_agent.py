@@ -133,7 +133,7 @@ def train_masked_dqn(total_timesteps: int = 500_000, continue_training: bool = F
 
 
 if __name__ == "__main__":
-    total_timesteps = 500_000
+    total_timesteps = 500_000_000
     continue_training = True
     do_train = True
     do_visualize = True
