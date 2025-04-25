@@ -19,11 +19,10 @@ sys.modules["numpy._core.numeric"] = numpy.core.numeric
 
 from blockblast_game.game_env import BlockGameEnv
 
-# Get script directory for saving logs/results
+# Define directories
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# Models folder is under project root
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
-MODELS_DIR = os.path.join(PROJECT_ROOT, "agents", "models")
+RESULTS_DIR = os.path.join(SCRIPT_DIR, "results")
+MODELS_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir, "agents", "models"))
 
 
 # Configure logging
@@ -105,8 +104,11 @@ def run_agent(
 
 
 def main():
-    # Initialize logging in agent_comparison folder
-    log_path = os.path.join(SCRIPT_DIR, "simulation.log")
+    # Ensure results directory exists
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+
+    # Initialize logging
+    log_path = os.path.join(RESULTS_DIR, "simulation.log")
     configure_logging(log_file=log_path)
     logging.info(f"Logs will be saved to {log_path}")
 
@@ -145,7 +147,7 @@ def main():
             env,
             agent,
             agent_name=name,
-            episodes=5,
+            episodes=500,
             max_steps=1000,
             use_masks=use_masks,
         )
@@ -157,7 +159,7 @@ def main():
             "invalid_attempts": results[4],
         }
 
-    # Flatten and save to CSV in agent_comparison folder
+    # Flatten and save to CSV
     rows = []
     for agent_name, data in all_results.items():
         for ep_idx, (sc, rw, st, vm, im) in enumerate(
@@ -182,7 +184,7 @@ def main():
                 }
             )
     df = pd.DataFrame(rows)
-    csv_path = os.path.join(SCRIPT_DIR, "results.csv")
+    csv_path = os.path.join(RESULTS_DIR, "results.csv")
     df.to_csv(csv_path, index=False)
     logging.info(f"Saved all episode results to {csv_path}")
 
