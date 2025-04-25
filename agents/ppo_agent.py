@@ -199,13 +199,13 @@ def train_masked_ppo(
 if __name__ == "__main__":
     # Parameters
     num_envs = 8
-    total_timesteps = 100_000_000
+    total_timesteps = 500_000
     continue_training = True
 
     train_ppo_without_masking = False
-    train_ppo_with_masking = True
+    train_ppo_with_masking = False
     visualize_ppo_without_masking = False
-    visualize_ppo_with_masking = False
+    visualize_ppo_with_masking = True
 
     # PPO
     if train_ppo_without_masking:

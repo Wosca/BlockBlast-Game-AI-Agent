@@ -109,7 +109,7 @@ def train_dqn(total_timesteps=100_000, save_path=None, continue_training=False):
 if __name__ == "__main__":
     # Hyperparameters
     total_timesteps = 500_000
-    continue_training = False
+    continue_training = True
     train_agent = True
     visualize = True
 
