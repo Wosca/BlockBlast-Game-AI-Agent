@@ -18,6 +18,7 @@ import numpy.core.numeric
 sys.modules["numpy._core.numeric"] = numpy.core.numeric
 
 from blockblast_game.game_env import BlockGameEnv
+from agents.dqn_masked_agent import MaskableDQN  # Import the custom MaskableDQN class
 
 # Define directories
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,10 +72,14 @@ def run_agent(
                 valid_actions = env.get_valid_actions()
                 action = np.random.choice(valid_actions)
             else:
+                # Always use inference (deterministic) mode so MaskableDQN.predict()
+                # returns a plain int when running single-env evaluation
                 if use_masks and hasattr(env, "action_masks"):
-                    action, _ = agent.predict(obs, action_masks=env.action_masks())
+                    action, _ = agent.predict(
+                        obs, action_masks=env.action_masks(), deterministic=True
+                    )
                 else:
-                    action, _ = agent.predict(obs)
+                    action, _ = agent.predict(obs, deterministic=True)
 
             obs, reward, terminated, truncated, info = env.step(action)
             total_reward += reward
@@ -138,11 +143,17 @@ def main():
     else:
         logging.warning("sb3_contrib.MaskablePPO not available; skipping Masked PPO")
 
+    masked_dqn_file = model_path("final_masked_dqn_model.zip")
+    if os.path.isfile(masked_dqn_file):
+        agents["Masked DQN"] = MaskableDQN.load(masked_dqn_file, env=env)
+    else:
+        logging.warning(f"Masked DQN model not found at {masked_dqn_file}")
+
     # Run experiments
     all_results = {}
     for name, agent in agents.items():
         logging.info(f"Starting runs for {name}")
-        use_masks = name == "Masked PPO"
+        use_masks = name in ["Masked PPO", "Masked DQN"]
         results = run_agent(
             env,
             agent,

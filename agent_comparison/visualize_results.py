@@ -64,8 +64,8 @@ combined_fname = os.path.join(RESULTS_DIR, "combined_moves.png")
 plt.savefig(combined_fname)
 print(f"Saved {combined_fname}")
 
-# Detailed comparison: Random vs Masked PPO
-compare_agents = ["Random", "Masked PPO"]
+# Detailed comparison: Random vs Masked PPO vs Masked DQN
+compare_agents = ["Random", "Masked PPO", "Masked DQN"]
 subset_grouped = df[df["agent"].isin(compare_agents)].groupby("agent").mean()
 compare_metrics = [
     ("score", "Average Score"),
@@ -82,7 +82,7 @@ for metric, title in compare_metrics:
         plt.text(
             bar.get_x() + bar.get_width() / 2, y, f"{y:.1f}", ha="center", va="bottom"
         )
-    plt.title(f"{title} (Random vs Masked PPO)")
+    plt.title(f"{title} (Random vs Masked PPO vs Masked DQN)")
     plt.xlabel("Agent")
     plt.ylabel(title)
     plt.tight_layout()
@@ -90,17 +90,33 @@ for metric, title in compare_metrics:
     plt.savefig(fname)
     print(f"Saved {fname}")
 
-# Histogram of score distributions for Random vs Masked PPO
+# Original histogram: Random vs Masked PPO vs Masked DQN
 plt.figure()
+compare_agents = ["Random", "Masked PPO", "Masked DQN"]
 for agent in compare_agents:
     scores = df[df["agent"] == agent]["score"]
     plt.hist(scores, bins=20, alpha=0.5, label=agent)
-plt.title("Score Distribution: Random vs Masked PPO")
+plt.title("Score Distribution: Random vs Masked PPO vs Masked DQN")
 plt.xlabel("Score")
 plt.ylabel("Frequency")
 plt.legend()
 plt.tight_layout()
 hist_fname = os.path.join(RESULTS_DIR, "hist_scores_random_vs_masked.png")
+plt.savefig(hist_fname)
+print(f"Saved {hist_fname}")
+
+# New histogram: Masked PPO vs Masked DQN
+plt.figure()
+compare_agents = ["Masked PPO", "Masked DQN"]
+for agent in compare_agents:
+    scores = df[df["agent"] == agent]["score"]
+    plt.hist(scores, bins=20, alpha=0.5, label=agent)
+plt.title("Score Distribution: Masked PPO vs Masked DQN")
+plt.xlabel("Score")
+plt.ylabel("Frequency")
+plt.legend()
+plt.tight_layout()
+hist_fname = os.path.join(RESULTS_DIR, "hist_scores_masked_vs_dqn.png")
 plt.savefig(hist_fname)
 print(f"Saved {hist_fname}")
 

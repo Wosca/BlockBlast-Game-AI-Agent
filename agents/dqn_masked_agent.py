@@ -56,7 +56,8 @@ class MaskableDQN(DQN):
             if np.random.rand() < self.exploration_rate:
                 valid = np.nonzero(masks[i])[0]
                 actions[i] = np.random.choice(valid)
-        # do NOT unwrap here, even if batch_size==1
+
+        # during training, ALWAYS return an array of shape (n_envs,)
         return actions, None
 
 
@@ -89,10 +90,10 @@ def train_masked_dqn(total_timesteps: int = 500_000, continue_training: bool = F
 
     # 3) Checkpoint callback
     checkpoint_cb = CheckpointCallback(
-        save_freq=1_000_000,
+        save_freq=100_000,
         save_path=MODELS_DIR,
         name_prefix="masked_dqn_model",
-        save_replay_buffer=False,  # turning this on crashes the program as its not picklable as of now
+        save_replay_buffer=False,
         save_vecnormalize=True,
     )
 
