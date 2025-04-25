@@ -1,5 +1,5 @@
-import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
 
 # Pull in the load_models function (and underlying `models` dict)
 from fast_api_integration.models import load_models
@@ -11,6 +11,15 @@ app = FastAPI(
     title="BlockBlast Solver API",
     description="FastAPI endpoints for running RL-based BlockBlast solvers",
     version="1.0.0",
+)
+
+# Add CORS middleware to allow everything
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 
