@@ -99,7 +99,7 @@ def train_ppo(
 if __name__ == "__main__":
     # Configuration
     num_envs = 8
-    total_timesteps = 50_000_000
+    total_timesteps = 50_000
     continue_training = False
 
     do_train = True
@@ -120,4 +120,5 @@ if __name__ == "__main__":
         model_file = os.path.join(MODELS_DIR, "final_ppo_model.zip")
         print(f"[ppo] Loading model from {model_file}")
         agent = PPO.load(model_file, env=render_env)
-        visualize_agent(render_env, agent, episodes=10, delay=0.2, use_masks=False)
+        visualize_agent(render_env, agent, episodes=10,
+                        delay=0.2, use_masks=False)
